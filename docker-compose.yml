@@ -1,0 +1,88 @@
+version: '3.8'
+
+networks:
+  laravel_network:
+    driver: bridge
+
+volumes:
+  db_server1_data:
+    driver: local
+  db_server2_data:
+    driver: local
+  db_server3_data:
+    driver: local
+
+services:
+  # Servicio de base de datos PostgreSQL
+  db_server1:
+    image: postgres:13
+    container_name: db_server1
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: auth_db
+    ports:
+      - "5432:5432"
+    networks:
+      - laravel_network
+    volumes:
+      - db_server1_data:/var/lib/postgresql/data
+
+  # Servicio de base de datos MongoDB
+  db_server2:
+    image: mongo:latest
+    container_name: db_server2
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27017:27017"
+    networks:
+      - laravel_network
+    volumes:
+      - db_server2_data:/data/db
+
+  # Servicio de base de datos MySQL
+  db_server3:
+    image: mysql:8.0
+    container_name: db_server3
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: orders_db
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel_network
+    volumes:
+      - db_server3_data:/var/lib/mysql
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    restart: unless-stopped
+    environment:
+      APP_ENV: local
+      APP_KEY: base64:7RBRGB7DmiMoPw3pc51Ndxf81GvLxznPMtnAaxPOXbk=
+      APP_DEBUG: true
+      DB_CONNECTION: pgsql
+      DB_HOST: db_server1
+      DB_PORT: 5432
+      DB_DATABASE: auth_db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      JWT_SECRET: RDkrR9auu5klACHWGwp34fFm1R3lLqH8bCpNKuSGAdy8IZ9uWphL6n09sQZpE4Gg
+    networks:
+      - laravel_network
+    depends_on:
+      - db_server1
+    ports:
+      - "8888:80"
+    volumes:
+      - ./auth-service:/var/www/html
