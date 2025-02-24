@@ -11,6 +11,8 @@ volumes:
     driver: local
   db_server3_data:
     driver: local
+  db_server4_data:
+    driver: local
 
 services:
   # Servicio de base de datos PostgreSQL
@@ -60,6 +62,21 @@ services:
     volumes:
       - db_server3_data:/var/lib/mysql
 
+  # Servicio de mongo Order Service
+  db_server4:
+    image: mongo:latest
+    container_name: db_server4
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27021:27017"
+    networks:
+      - laravel_network
+    volumes:
+      - db_server4_data:/data/db
+
   # Auth Service
   auth-service:
     build:
@@ -86,3 +103,70 @@ services:
       - "8888:80"
     volumes:
       - ./auth-service:/var/www/html
+
+
+  # Inventory Service
+  inventory-service:
+    build:
+      context: ./inventory-service
+      dockerfile: Dockerfile
+    container_name: inventory-service
+    restart: unless-stopped
+    environment:
+      APP_ENV: local
+      APP_KEY: base64:7RBRGB7DmiMoPw3pc51Ndxf81GvLxznPMtnAaxPOXbk=
+      APP_DEBUG: true
+      DB_CONNECTION: mongodb
+      DB_HOST: db_server2
+      DB_PORT: 27017
+      DB_DATABASE: inventory_db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      JWT_SECRET: RDkrR9auu5klACHWGwp34fFm1R3lLqH8bCpNKuSGAdy8IZ9uWphL6n09sQZpE4Gg
+    networks:
+      - laravel_network
+    depends_on:
+      - db_server2
+    ports:
+      - "8889:80"
+    volumes:
+      - ./inventory-service:/var/www/html
+
+  # Mail Service
+  mail-service:
+    build:
+      context: ./mail-service
+      dockerfile: Dockerfile
+    container_name: mail-service
+    restart: unless-stopped
+    environment:
+      APP_ENV: local
+      APP_KEY: base64:7RBRGB7DmiMoPw3pc51Ndxf81GvLxznPMtnAaxPOXbk=
+      APP_DEBUG: true
+      DB_CONNECTION: mysql
+      DB_HOST: db_server3
+      DB_PORT: 3306
+      DB_DATABASE: orders_db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+
+      BROADCAST_CONNECTION: log
+      FILESYSTEM_DISK: local
+      QUEUE_CONNECTION: database
+
+      MAIL_MAILER: smtp
+      MAIL_HOST: sandbox.smtp.mailtrap.io
+      MAIL_PORT: 2525
+      MAIL_USERNAME: af88705ded6737
+      MAIL_PASSWORD: 28498a8ff0f45f
+      MAIL_FROM_ADDRESS: kogob87332@jarars.com
+      MAIL_FROM_NAME: ${APP_NAME}
+      JWT_SECRET: RDkrR9auu5klACHWGwp34fFm1R3lLqH8bCpNKuSGAdy8IZ9uWphL6n09sQZpE4Gg
+    networks:
+      - laravel_network
+    depends_on:
+      - db_server3
+    ports:
+      - "8890:80"
+    volumes:
+      - ./mail-service:/var/www/html
