@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <h1>Confirmacion de Orden</h1>
+    <h1>{{$subject}}</h1>
     <p>Gracias por su pedido, {{ $order['customer_name'] }}!</p>
 
     <h2>Detalles de la Orden:</h2>

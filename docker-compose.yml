@@ -104,7 +104,6 @@ services:
     volumes:
       - ./auth-service:/var/www/html
 
-
   # Inventory Service
   inventory-service:
     build:
@@ -160,7 +159,7 @@ services:
       MAIL_USERNAME: af88705ded6737
       MAIL_PASSWORD: 28498a8ff0f45f
       MAIL_FROM_ADDRESS: kogob87332@jarars.com
-      MAIL_FROM_NAME: ${APP_NAME}
+      MAIL_FROM_NAME: APP_NAME
       JWT_SECRET: RDkrR9auu5klACHWGwp34fFm1R3lLqH8bCpNKuSGAdy8IZ9uWphL6n09sQZpE4Gg
     networks:
       - laravel_network
@@ -170,3 +169,34 @@ services:
       - "8890:80"
     volumes:
       - ./mail-service:/var/www/html
+
+  # Order Service
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: order-service
+    restart: unless-stopped
+    environment:
+      APP_ENV: local
+      APP_KEY: base64:7RBRGB7DmiMoPw3pc51Ndxf81GvLxznPMtnAaxPOXbk=
+      APP_DEBUG: true
+      INVENTORY_SERVICE_URL: http://inventory-service/api/v1
+      MAIL_SERVICE_URL: http://mail-service/api/v1
+      DB_CONNECTION: mongodb
+      DB_HOST: db_server4
+      DB_PORT: 27017
+      DB_DATABASE: orders_db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      MAIL_FROM_ADDRESS: pedidos@gmail.com
+      MAIL_FROM_NAME: APP_NAME
+      JWT_SECRET: RDkrR9auu5klACHWGwp34fFm1R3lLqH8bCpNKuSGAdy8IZ9uWphL6n09sQZpE4Gg
+    networks:
+      - laravel_network
+    depends_on:
+      - db_server4
+    ports:
+      - "8879:80"
+    volumes:
+      - ./order-service:/var/www/html

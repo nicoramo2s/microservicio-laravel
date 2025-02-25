@@ -51,6 +51,7 @@ class OrderShipped extends Mailable
         return new Content(
             view: 'emails.order-shipped',
             with: [
+                'subject' => $this->subject,
                 'order' => $this->order,
                 'contentBody' => $this->contentBody,
             ],
