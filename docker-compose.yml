@@ -200,3 +200,34 @@ services:
       - "8879:80"
     volumes:
       - ./order-service:/var/www/html
+
+  # ApiGateway Service
+  api-gateway-service:
+    build:
+      context: ./api-gateway-service
+      dockerfile: Dockerfile
+    container_name: api-gateway-service
+    restart: unless-stopped
+    environment:
+      APP_ENV: local
+      APP_KEY: base64:7RBRGB7DmiMoPw3pc51Ndxf81GvLxznPMtnAaxPOXbk=
+      APP_DEBUG: true
+      INVENTORY_SERVICE_URL: http://inventory-service/api/v1/products
+      ORDERS_SERVICE_URL: http://order-service/api/v1/orders
+      AUTH_SERVICE_URL: http://auth-service/api/v1/auth
+      JWT_SECRET: RDkrR9auu5klACHWGwp34fFm1R3lLqH8bCpNKuSGAdy8IZ9uWphL6n09sQZpE4Gg
+    networks:
+      - laravel_network
+    depends_on:
+      - auth-service
+      - inventory-service
+      - mail-service
+      - order-service
+      - db_server1
+      - db_server2
+      - db_server3
+      - db_server4
+    ports:
+      - "8881:80"
+    volumes:
+      - ./api-gateway-service:/var/www/html

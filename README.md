@@ -6,6 +6,8 @@ Este proyecto consiste en una arquitectura de microservicios utilizando Laravel.
 
 ## Estructura del Proyecto
 
+La estructura del proyecto es la siguiente:
+
 ## Servicios
 
 ### Auth Service
@@ -23,7 +25,10 @@ Este servicio se encarga de la autenticación y autorización de usuarios.
 
 Este servicio maneja la gestión de inventarios.
 
+#### Endpoints
+
 - `GET /api/v1/products`: Listar todos los productos en inventario.
+- `GET /api/v1/products/{id}`: Ver un producto unico.
 - `POST /api/v1/products`: Agregar un nuevo producto al inventario.
 - `PUT /api/v1/products/{id}`: Actualizar información de un producto específico.
 - `DELETE /api/v1/products/{id}`: Eliminar un producto del inventario.
@@ -48,48 +53,53 @@ Este servicio maneja la gestión de pedidos.
 - `PUT /api/v1/orders/{id}`: Actualizar un pedido específico.
 - `DELETE /api/v1/orders/{id}`: Eliminar un pedido.
 
+### API Gateway Service
+
+Este servicio actúa como un punto de entrada único para las solicitudes a los diferentes microservicios.
+
 ## Instalación
 
 1. Clona el repositorio:
-    ```sh
-    git clone https://github.com/tu-usuario/microlaravel.git
-    ```
+
+   ```sh
+   git clone https://github.com/tu-usuario/microlaravel.git
+   ```
 
 2. Navega a cada servicio e instala las dependencias:
-    ```sh
-    cd auth-service
-    composer install
-    npm install
 
-    cd ../inventory-service
-    composer install
-    npm install
+   ```sh
+   cd auth-service
+   composer install
+   npm install
 
-    cd ../mail-service
-    composer install
-    npm install
+   cd ../inventory-service
+   composer install
+   npm install
 
-    cd ../order-service
-    composer install
-    npm install
-    ```
+   cd ../mail-service
+   composer install
+   npm install
 
-3. Configura los archivos `.env` en cada servicio.
+   cd ../order-service
+   composer install
+   npm install
+   ```
+
+3. Configura los archivos [.env](http://_vscodecontentref_/2) en cada servicio.
 
 4. Configura las variables de entorno y levanta los servicios con Docker Compose:
-    ```sh
-    docker-compose up -d
-    ```
+   ```sh
+   docker-compose up -d
+   ```
 
 ## Uso
 
-Cada servicio expone una serie de endpoints que pueden ser utilizados para interactuar con la aplicación.
+Cada servicio expone una serie de endpoints que pueden ser utilizados para interactuar con la .
 
-Asegurate de que las `APP_KEY` y `JWT_SECRET` sean las mismas en cada servicio, generalas con:
+aplicaciónAsegúrate de que las `APP_KEY` y `JWT_SECRET` sean las mismas en cada servicio, generalas con:
+
 ```bash
 php artisan key:generate
-```
-```bash
+
 php artisan jwt:secret
 ```
-
