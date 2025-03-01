@@ -62,7 +62,7 @@ Este servicio actúa como un punto de entrada único para las solicitudes a los 
 1. Clona el repositorio:
 
    ```sh
-   git clone https://github.com/tu-usuario/microlaravel.git
+   git clone https://github.com/tu-usuario/microservicio-laravel.git
    ```
 
 2. Navega a cada servicio e instala las dependencias:
